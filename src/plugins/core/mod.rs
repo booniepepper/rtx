@@ -6,11 +6,13 @@ use once_cell::sync::Lazy;
 pub use python::PythonPlugin;
 
 use crate::plugins::core::node::NodePlugin;
+use crate::plugins::core::ruby::RubyPlugin;
 use crate::plugins::{Plugin, PluginName};
 use crate::tool::Tool;
 
 mod node;
 mod python;
+mod ruby;
 
 type ToolMap = BTreeMap<PluginName, Arc<Tool>>;
 
@@ -22,7 +24,9 @@ pub static CORE_PLUGINS: Lazy<ToolMap> = Lazy::new(|| {
     ])
 });
 
-pub static EXPERIMENTAL_CORE_PLUGINS: Lazy<ToolMap> = Lazy::new(|| build_core_plugins(vec![]));
+pub static EXPERIMENTAL_CORE_PLUGINS: Lazy<ToolMap> = Lazy::new(|| build_core_plugins(vec![
+    Box::new(RubyPlugin::new("ruby".to_string())),
+]));
 
 fn build_core_plugins(tools: Vec<Box<dyn Plugin>>) -> ToolMap {
     ToolMap::from_iter(tools.into_iter().map(|plugin| {
